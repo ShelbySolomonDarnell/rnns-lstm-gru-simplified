@@ -6,7 +6,6 @@ from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 from tqdm import tqdm
 
-# Utility functions
 def g(x):
     return torch.where(x >= 0, x + 0.5, torch.sigmoid(x))
 
@@ -14,12 +13,10 @@ def log_g(x):
     return torch.where(x >= 0, torch.log(F.relu(x) + 0.5), -F.softplus(-x))
 
 def parallel_scan_log(log_coeffs, log_values):
-    a_star = F.pad(torch.cumsum(log_coeffs, dim=1), (0, 0, 1, 0))
+    a_star = F.pad(torch.cumsum(log_coeffs, dim=1), (1, 0))
     log_h0_plus_b_star = torch.logcumsumexp(log_values - a_star.unsqueeze(-1), dim=1)
     log_h = a_star.unsqueeze(-1) + log_h0_plus_b_star
     return torch.exp(log_h)
-
-# Model definitions
 class MinGRU(nn.Module):
     def __init__(self, input_size, hidden_size):
         super(MinGRU, self).__init__()
@@ -66,12 +63,11 @@ class LanguageModel(nn.Module):
 
     def forward(self, x):
         x = self.embedding(x)
-        h = torch.zeros(x.size(0), 1, x.size(2)).to(x.device)
+        h = torch.zeros(x.size(0), x.size(2)).to(x.device)
         for rnn in self.rnn_layers:
             x = rnn(x, h)
         return self.fc(x)
 
-# Data loading and preprocessing
 def load_shakespeare_data(file_path, seq_length=100):
     with open(file_path, 'r') as f:
         text = f.read()
@@ -116,7 +112,6 @@ def evaluate(model, val_loader, criterion, device):
             total_loss += loss.item()
     return total_loss / len(val_loader)
 
-# Main training loop
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -138,12 +133,10 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
     
-    # Initialize model
     model = LanguageModel(vocab_size, embed_size, hidden_size, num_layers, rnn_type='minlstm').to(device)
     optimizer = optim.AdamW(model.parameters(), lr=lr)
     criterion = nn.CrossEntropyLoss()
     
-    # Training loop
     best_val_loss = float('inf')
     for epoch in range(epochs):
         train_loss = train(model, train_loader, optimizer, criterion, device)
