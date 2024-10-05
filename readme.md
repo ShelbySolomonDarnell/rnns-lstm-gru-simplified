@@ -6,41 +6,73 @@ This project implements the minimal RNN architectures (minGRU and minLSTM) propo
 
 Feng, L., Tung, F., Ahmed, M.O., Bengio, Y., & Hajimirsadeghi, H. (2024). Were RNNs All We Needed? arXiv preprint arXiv:2410.01201v1.
 
-## Key Equations
+## Key Equations and Concepts
 
-The core innovations of this paper lie in the simplified RNN architectures. Here are the key equations:
+### Parallel Scan Algorithm
+
+The core of the efficiency in these models comes from the parallel scan algorithm. For a sequence of operations:
+
+$v_t = a_t \odot v_{t-1} + b_t$
+
+The parallel scan computes all $v_t$ efficiently in parallel.
 
 ### minGRU
 
-The minGRU update is given by:
+The minGRU update in log-space:
 
-$h_t = (1 - z_t) \odot h_{t-1} + z_t \odot \tilde{h}_t$
+$\log(z_t) = -\text{softplus}(-k_t)$
+$\log(1 - z_t) = -\text{softplus}(k_t)$
 
-where:
-
-$z_t = \sigma(W_z x_t)$
-$\tilde{h}_t = W_h x_t$
+where $k_t = W_z x_t$
 
 ### minLSTM
 
-The minLSTM update is given by:
+The minLSTM update in log-space:
 
-$h_t = f'_t \odot h_{t-1} + i'_t \odot \tilde{h}_t$
+$\log(f'_t) = -\text{softplus}(\text{softplus}(-p_t) - \text{softplus}(-k_t))$
+$\log(i'_t) = -\text{softplus}(\text{softplus}(-k_t) - \text{softplus}(-p_t))$
 
-where:
+where $k_t = W_i x_t$ and $p_t = W_f x_t$
 
-$f_t = \sigma(W_f x_t)$
-$i_t = \sigma(W_i x_t)$
-$f'_t = \frac{f_t}{f_t + i_t}$
-$i'_t = \frac{i_t}{f_t + i_t}$
-$\tilde{h}_t = W_h x_t$
+### Activation Function
 
-## Log-space Implementation
-
-For numerical stability, the actual implementation uses log-space computations. The key function is:
+The continuous activation function $g(x)$ and its log-space version:
 
 $g(x) = \begin{cases} 
 x + 0.5, & \text{if } x \geq 0 \\
 \sigma(x), & \text{otherwise}
 \end{cases}$
 
+$\log(g(x)) = \begin{cases}
+\log(x + 0.5), & \text{if } x \geq 0 \\
+-\text{softplus}(-x), & \text{otherwise}
+\end{cases}$
+
+### Parallel Scan in Log-Space
+
+The parallel scan algorithm in log-space is implemented as:
+
+$a^* = \text{pad}(\text{cumsum}(\log(a_{1:T})), (1, 0))$
+$\log(h_0 + b^*) = \text{logcumsumexp}(\log(b_{1:T}) - a^*)$
+$\log(h) = a^* + \log(h_0 + b^*)$
+
+## Model Architecture
+
+The language model consists of:
+1. An embedding layer: $x_t = \text{Embed}(w_t)$
+2. Multiple layers of either minLSTM or minGRU: $h_t = \text{RNN}(x_t, h_{t-1})$
+3. A final linear layer for prediction: $y_t = Wh_t + b$
+
+## Training
+
+The model is trained using AdamW optimizer and CrossEntropyLoss:
+
+$\mathcal{L} = -\sum_t \log p(w_t | w_{<t})$
+
+where $p(w_t | w_{<t})$ is the predicted probability of the correct word.
+
+## Usage
+
+1. Ensure you have PyTorch installed.
+2. Replace "path_to_shakespeare_data.txt" with the path to your Shakespeare dataset.
+3. Run the script:
