@@ -1,4 +1,4 @@
-# Minimal RNN Language Model
+# RNN Language Model
 
 This project implements the minimal RNN architectures (minGRU and minLSTM) proposed in the paper "Were RNNs All We Needed?" by Leo Feng et al. It applies these models to a character-level language modeling task using Shakespeare's text.
 
