@@ -38,15 +38,9 @@ where $k_t = W_i x_t$ and $p_t = W_f x_t$
 
 The continuous activation function $g(x)$ and its log-space version:
 
-$g(x) = \begin{cases} 
-x + 0.5, & \text{if } x \geq 0 \\
-\sigma(x), & \text{otherwise}
-\end{cases}$
+$g(x) = \begin{cases} x + 0.5, & \text{if } x \geq 0 \\ \sigma(x), & \text{otherwise} \end{cases}$
 
-$\log(g(x)) = \begin{cases}
-\log(x + 0.5), & \text{if } x \geq 0 \\
--\text{softplus}(-x), & \text{otherwise}
-\end{cases}$
+$\log(g(x)) = \begin{cases} \log(x + 0.5), & \text{if } x \geq 0 \\ -\text{softplus}(-x), & \text{otherwise} \end{cases}$
 
 ### Parallel Scan in Log-Space
 
