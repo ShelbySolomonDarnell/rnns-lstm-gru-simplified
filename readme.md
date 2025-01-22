@@ -69,4 +69,6 @@ where $p(w_t | w_{<t})$ is the predicted probability of the correct word.
 
 1. Ensure you have PyTorch installed.
 2. Replace "path_to_shakespeare_data.txt" with the path to your Shakespeare dataset.
-3. Run the script:
+3. Download Shakespeare's plays, sonnets, and poems at [this link](https://www.folger.edu/explore/shakespeares-works/download/) as text files.
+4. Concantenate all files together.
+3. Run the script: ./run.sh
