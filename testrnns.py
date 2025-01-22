@@ -4,7 +4,7 @@ import torch
 import configparser
 import datetime
 from common         import *
-from base_lm        import *
+from base_lm        import LanguageModel
 from datetime       import date
 #from torchtext.data import get_tokenizer
 from modelutils import load_shakespeare_data
@@ -28,12 +28,15 @@ def generate(prompt, max_seq_len, temperature, model, vocab, device, seed=None):
     tokens = [char for char in prompt]
     indices = [vocab[t] for t in tokens]
     batch_size = 1
-    hidden = torch.zeros(1).to(device)
+    '''
+    hidden isn't needed as the hidden tensor is created in the LanguageModel class
+    '''
     #hidden = model.init_hidden(batch_size, device)
     with torch.no_grad():
         for i in range(max_seq_len):
             src = torch.LongTensor([indices]).to(device)
-            prediction, hidden = model(src, hidden)
+            #prediction, hidden = model(src, hidden) 'this is original code'
+            prediction, hidden = model(src)
             probs = torch.softmax(prediction[:, -1] / temperature, dim=-1)  
             prediction = torch.multinomial(probs, num_samples=1).item()    
             
