@@ -71,4 +71,6 @@ where $p(w_t | w_{<t})$ is the predicted probability of the correct word.
 2. Replace "path_to_shakespeare_data.txt" with the path to your Shakespeare dataset.
 3. Download Shakespeare's plays, sonnets, and poems at [this link](https://www.folger.edu/explore/shakespeares-works/download/) as text files.
 4. Concantenate all files together.
-3. Run the script: ./run.sh
+5. Edit settings.cfg with local location of shakespeare dataset
+6. Go into directory of this repo
+7. Run the script: ./run.sh
