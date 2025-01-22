@@ -67,10 +67,29 @@ where $p(w_t | w_{<t})$ is the predicted probability of the correct word.
 
 ## Usage
 
-1. Ensure you have PyTorch installed.
+1. Create a virtual environment using reqs.txt.
+```sh
+  > virtualenv simplified_rnns
+  > source simplified_rnns/bin/activate
+  > pip install -r reqs.txt
+```
 2. Replace "path_to_shakespeare_data.txt" with the path to your Shakespeare dataset.
 3. Download Shakespeare's plays, sonnets, and poems at [this link](https://www.folger.edu/explore/shakespeares-works/download/) as text files.
 4. Concantenate all files together.
-5. Edit settings.cfg with local location of shakespeare dataset
-6. Go into directory of this repo
-7. Run the script: ./run.sh
+5. Place dataset into an appropriate folder.
+6. Go into directory of this repo.
+```sh
+cd rnns-lstm-gru-simplified/
+```
+7. Rename example_settings.cfg to settings.cfg, and create logs/ directory.
+```sh
+ > mv example_settings.cfg settings.cfg
+ > mkdir logs/
+```
+8. Edit settings.cfg with local location of shakespeare dataset
+9. Run the script: ./run.sh
+```sh
+ > ./run.sh
+ or
+ > sh run.sh
+```
